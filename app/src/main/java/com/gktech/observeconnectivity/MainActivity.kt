@@ -14,13 +14,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import com.gktech.observeconnectivity.ui.theme.ObserveConnectivityTheme
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class MainActivity : ComponentActivity() {
     private lateinit var connectivityObserver: ConnectivityObserver
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         connectivityObserver = NetworkConnectivityObserver(applicationContext)
+        connectivityObserver.observer().onEach {
+            println("Status is $it")
+        }.launchIn(lifecycleScope)
         setContent {
             ObserveConnectivityTheme {
                 val status by connectivityObserver.observer().collectAsState(
